@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/jcdecaux-ruby'
+
+require 'optparse'
+require "rubygems"
+require 'pp'
+
+# The actual options will be stored in this hash
+options = {}
+
+# Set up the options you are looking for
+optparse = OptionParser.new do |opts|
+  explanation = "> JCDecaux Ruby client: https://developer.jcdecaux.com/#/opendata/vls?page=getstarted\n\n"
+  usage =  "Usage: #{$0} [options]"
+  opts.banner = "#{explanation} #{usage}"
+
+  opts.on( '--stations CONTRACT_NAME', "Fetch all the stations from the provided contract" ) do |o|
+    pp Station.all(in_contract: o)
+    exit
+  end
+
+  opts.on( '--station STATION_NUMBER', "Fetch the station information from the provided station number and contract" ) do |station|
+    opts.on( '--contract CONTRACT_NAME', "Fetch the station information from the provided station number and contract" ) do |contract|
+      pp Station.new({ :number => station, :contract_name => contract }).information
+      exit
+    end
+  end
+
+  opts.on('--contracts', "Gets a list of all the contracts" ) do |o|
+    pp Contract.all
+    exit
+  end
+
+  opts.on( '-h', '--help', 'Display help' ) do
+    puts opts
+    exit
+  end
+end
+
+# The parse! method also removes any options it finds from ARGV.
+optparse.parse!
+
